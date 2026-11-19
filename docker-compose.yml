@@ -1,0 +1,9 @@
+services:
+  db:                       # nome do serviço
+    image: postgres:16      # imagem oficial do Postgres
+    environment:            # cria banco, usuário e senha
+      POSTGRES_DB: sulwork
+      POSTGRES_USER: sulwork
+      POSTGRES_PASSWORD: sulwork
+    ports:
+      - "5432:5432"         # porta da sua máquina : porta do container
