@@ -1,4 +1,4 @@
-package com.sulwork.com.sulwork;
+package com.sulwork;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
