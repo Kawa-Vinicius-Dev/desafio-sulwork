@@ -1,5 +1,6 @@
 import { Link, NavLink, Route, Routes } from 'react-router-dom';
 import { CategoriasPage } from './pages/CategoriasPage';
+import { EventoDetalhePage } from './pages/EventoDetalhePage';
 import { EventosPage } from './pages/EventosPage';
 import { ParticipantesPage } from './pages/ParticipantesPage';
 
@@ -23,6 +24,7 @@ export function App() {
             <main className="container">
                 <Routes>
                     <Route path="/" element={<EventosPage />} />
+                    <Route path="/eventos/:id" element={<EventoDetalhePage />} />
                     <Route path="/participantes" element={<ParticipantesPage />} />
                     <Route path="/categorias" element={<CategoriasPage />} />
                     <Route
