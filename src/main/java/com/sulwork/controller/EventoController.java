@@ -6,8 +6,7 @@ import com.sulwork.service.EventoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,9 +21,10 @@ public class EventoController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public EventoResponse criar(@RequestBody @Valid EventoRequest req) {
-        return service.criar(req);
+    public ResponseEntity<EventoResponse> criar(@RequestBody @Valid EventoRequest req) {
+        EventoResponse criado = service.criar(req);
+        URI uri = URI.create("/api/eventos/" + criado.id());
+        return ResponseEntity.created(uri).body(criado);
     }
 
     @GetMapping
