@@ -1,5 +1,6 @@
 package com.sulwork.controller;
 
+import com.sulwork.dto.AlterarStatusRequest;
 import com.sulwork.dto.EventoRequest;
 import com.sulwork.dto.EventoResponse;
 import com.sulwork.service.EventoService;
@@ -36,4 +37,10 @@ public class EventoController {
     public EventoResponse buscar(@PathVariable Long id) {
         return service.buscar(id);
     }
+
+    @PatchMapping("/{id}/status")
+    public EventoResponse alterarStatus(@PathVariable Long id, @RequestBody @Valid AlterarStatusRequest req) {
+        return service.alterarStatus(id, req.status());
+    }
+
 }
