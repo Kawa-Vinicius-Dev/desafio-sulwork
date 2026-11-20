@@ -28,4 +28,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(Instant.now(), 400, "Dados inválidos", req.getRequestURI(), fields));
     }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> naoEncontrado(ResourceNotFoundException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.of(404, ex.getMessage(), req.getRequestURI()));
+    }
 }
