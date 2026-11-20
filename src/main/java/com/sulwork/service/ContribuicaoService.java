@@ -27,11 +27,13 @@ public class ContribuicaoService {
     private final ItemService itemService;
     private final ParticipanteService participanteService;
 
-    public ContribuicaoService(ContribuicaoRepository repository,
-                               ParticipacaoRepository participacaoRepository,
-                               EventoService eventoService,
-                               ItemService itemService,
-                               ParticipanteService participanteService) {
+    public ContribuicaoService(
+            ContribuicaoRepository repository,
+            ParticipacaoRepository participacaoRepository,
+            EventoService eventoService,
+            ItemService itemService,
+            ParticipanteService participanteService
+    ) {
         this.repository = repository;
         this.participacaoRepository = participacaoRepository;
         this.eventoService = eventoService;
