@@ -1,5 +1,5 @@
 package com.sulwork.domain;
 
 public enum StatusEvento{
-    RASCUNHO, ABERTO, ENCERRADO, REALIZADO, CANCELADO
+    RASCUNHO, ABERTO, INSCRICOES_ENCERRADAS, REALIZADO, CANCELADO
 }
