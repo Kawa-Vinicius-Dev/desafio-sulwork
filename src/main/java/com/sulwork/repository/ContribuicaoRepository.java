@@ -6,10 +6,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ContribuicaoRepository extends JpaRepository<Contribuicao, Long> {
 
     List<Contribuicao> findByItemEventoId(Long eventoId);
+
+    /** Busca a contribuição garantindo que ela pertence ao evento da URL. */
+    Optional<Contribuicao> findByIdAndItemEventoId(Long id, Long eventoId);
 
     /** Total já confirmado para um item (0 se ninguém contribuiu). */
     @Query(value = """
@@ -18,6 +22,16 @@ public interface ContribuicaoRepository extends JpaRepository<Contribuicao, Long
              WHERE item_id = :itemId
             """, nativeQuery = true)
     long somarQuantidadePorItem(@Param("itemId") Long itemId);
+
+    /** Total do item ignorando uma contribuição: usado ao alterar, pra não contar a quantidade antiga. */
+    @Query(value = """
+            SELECT COALESCE(SUM(quantidade), 0)
+              FROM contribuicao
+             WHERE item_id = :itemId
+               AND id <> :contribuicaoId
+            """, nativeQuery = true)
+    long somarQuantidadePorItemExceto(@Param("itemId") Long itemId,
+                                      @Param("contribuicaoId") Long contribuicaoId);
 
     /** Itens do evento que ainda não atingiram a quantidade necessária. */
     @Query(value = """

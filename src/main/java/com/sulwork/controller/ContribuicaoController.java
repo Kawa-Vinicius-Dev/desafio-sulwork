@@ -1,5 +1,6 @@
 package com.sulwork.controller;
 
+import com.sulwork.dto.AlterarContribuicaoRequest;
 import com.sulwork.dto.ContribuicaoRequest;
 import com.sulwork.dto.ContribuicaoResponse;
 import com.sulwork.dto.ItemFaltanteResponse;
@@ -29,6 +30,19 @@ public class ContribuicaoController {
         return ResponseEntity
                 .created(URI.create("/api/eventos/" + eventoId + "/contribuicoes/" + criada.id()))
                 .body(criada);
+    }
+
+    @PutMapping("/contribuicoes/{contribuicaoId}")
+    public ContribuicaoResponse alterar(@PathVariable Long eventoId,
+                                        @PathVariable Long contribuicaoId,
+                                        @RequestBody @Valid AlterarContribuicaoRequest request) {
+        return service.alterar(eventoId, contribuicaoId, request);
+    }
+
+    @DeleteMapping("/contribuicoes/{contribuicaoId}")
+    public ResponseEntity<Void> remover(@PathVariable Long eventoId, @PathVariable Long contribuicaoId) {
+        service.remover(eventoId, contribuicaoId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/contribuicoes")

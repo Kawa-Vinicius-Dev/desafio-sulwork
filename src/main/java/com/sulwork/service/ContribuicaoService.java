@@ -5,6 +5,7 @@ import com.sulwork.domain.Evento;
 import com.sulwork.domain.Item;
 import com.sulwork.domain.Participante;
 import com.sulwork.domain.StatusEvento;
+import com.sulwork.dto.AlterarContribuicaoRequest;
 import com.sulwork.dto.ContribuicaoRequest;
 import com.sulwork.dto.ContribuicaoResponse;
 import com.sulwork.dto.ItemFaltanteResponse;
@@ -50,27 +51,38 @@ public class ContribuicaoService {
         if (!item.getEvento().getId().equals(eventoId)) {
             throw new ResourceNotFoundException("Item", itemId);
         }
-        if (evento.getStatus() != StatusEvento.ABERTO) {
-            throw new BusinessRuleException("Contribuições só são permitidas com o evento ABERTO");
-        }
-        if (LocalDateTime.now().isAfter(evento.getPrazoAlteracoes())) {
-            throw new BusinessRuleException("O prazo para contribuições deste evento já encerrou");
-        }
+        validarAlteracaoPermitida(evento);
         if (!participacaoRepository.existsByEventoIdAndParticipanteId(eventoId, participante.getId())) {
             throw new BusinessRuleException("Participante não está inscrito neste evento");
         }
 
         long jaConfirmado = repository.somarQuantidadePorItem(itemId);
-        long restante = item.getQuantidadeNecessaria() - jaConfirmado;
-        if (request.quantidade() > restante) {
-            throw new BusinessRuleException("Quantidade excede o necessário. Restam " + restante);
-        }
+        validarQuantidade(item, jaConfirmado, request.quantidade());
 
         Contribuicao c = new Contribuicao();
         c.setItem(item);
         c.setParticipante(participante);
         c.setQuantidade(request.quantidade());
         return ContribuicaoResponse.from(repository.save(c));
+    }
+
+    @Transactional
+    public ContribuicaoResponse alterar(Long eventoId, Long contribuicaoId, AlterarContribuicaoRequest request) {
+        Contribuicao c = buscarDoEvento(eventoId, contribuicaoId);
+        validarAlteracaoPermitida(c.getItem().getEvento());
+
+        long dosOutros = repository.somarQuantidadePorItemExceto(c.getItem().getId(), contribuicaoId);
+        validarQuantidade(c.getItem(), dosOutros, request.quantidade());
+
+        c.setQuantidade(request.quantidade());
+        return ContribuicaoResponse.from(c);
+    }
+
+    @Transactional
+    public void remover(Long eventoId, Long contribuicaoId) {
+        Contribuicao c = buscarDoEvento(eventoId, contribuicaoId);
+        validarAlteracaoPermitida(c.getItem().getEvento());
+        repository.delete(c);
     }
 
     @Transactional(readOnly = true)
@@ -83,5 +95,28 @@ public class ContribuicaoService {
     public List<ItemFaltanteResponse> faltantes(Long eventoId) {
         eventoService.buscarEntidade(eventoId);
         return repository.buscarFaltantes(eventoId).stream().map(ItemFaltanteResponse::from).toList();
+    }
+
+    private Contribuicao buscarDoEvento(Long eventoId, Long contribuicaoId) {
+        return repository.findByIdAndItemEventoId(contribuicaoId, eventoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Contribuição", contribuicaoId));
+    }
+
+    /** Incluir, alterar e remover seguem a mesma regra: evento ABERTO e dentro do prazo. */
+    private void validarAlteracaoPermitida(Evento evento) {
+        if (evento.getStatus() != StatusEvento.ABERTO) {
+            throw new BusinessRuleException("Contribuições só podem ser alteradas com o evento ABERTO");
+        }
+        if (LocalDateTime.now().isAfter(evento.getPrazoAlteracoes())) {
+            throw new BusinessRuleException("O prazo para contribuições deste evento já encerrou");
+        }
+    }
+
+    /** A soma de todas as contribuições do item nunca passa da quantidade necessária. */
+    private void validarQuantidade(Item item, long jaConfirmado, int quantidade) {
+        long restante = item.getQuantidadeNecessaria() - jaConfirmado;
+        if (quantidade > restante) {
+            throw new BusinessRuleException("Quantidade excede o necessário. Restam " + restante);
+        }
     }
 }
