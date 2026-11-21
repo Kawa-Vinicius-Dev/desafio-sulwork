@@ -1,5 +1,6 @@
 import { http } from './http';
 import type {
+  AlertaAlergeno,
   Categoria,
   Cobertura,
   Contribuicao,
@@ -68,6 +69,10 @@ export const metasApi = {
 
 export const coberturaApi = {
   calcular: (eventoId: number) => http.get<Cobertura>(`/eventos/${eventoId}/cobertura`),
+};
+
+export const alertasApi = {
+  alergenos: (eventoId: number) => http.get<AlertaAlergeno[]>(`/eventos/${eventoId}/alertas-alergenos`),
 };
 
 export { ApiError } from './http';

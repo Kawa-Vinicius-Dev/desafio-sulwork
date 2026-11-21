@@ -14,9 +14,10 @@ interface Props {
   evento: Evento;
   participacoes: Resource<Participacao[]>;
   participantes: Resource<Participante[]>;
+  onInscrito: () => void;
 }
 
-export function ParticipacoesSection({ evento, participacoes, participantes }: Props) {
+export function ParticipacoesSection({ evento, participacoes, participantes, onInscrito }: Props) {
   const [participanteId, setParticipanteId] = useState('');
   const inscrever = useSubmit(participacoesApi.inscrever);
 
@@ -27,7 +28,7 @@ export function ParticipacoesSection({ evento, participacoes, participantes }: P
     e.preventDefault();
     if (await inscrever.run(evento.id, Number(participanteId))) {
       setParticipanteId('');
-      participacoes.reload();
+      onInscrito();
     }
   }
 

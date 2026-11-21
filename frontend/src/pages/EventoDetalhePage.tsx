@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
+  alertasApi,
   categoriasApi,
   coberturaApi,
   contribuicoesApi,
@@ -16,6 +17,7 @@ import { StatusBadge } from '../components/StatusBadge';
 import { TIPO_LABEL } from '../domain/evento';
 import { formatarDataHora } from '../domain/formatadores';
 import { useResource } from '../hooks/useResource';
+import { AlertasAlergenoPanel } from './evento/AlertasAlergenoPanel';
 import { CoberturaPanel } from './evento/CoberturaPanel';
 import { ContribuicoesSection } from './evento/ContribuicoesSection';
 import { FaltantesPanel } from './evento/FaltantesPanel';
@@ -38,6 +40,7 @@ export function EventoDetalhePage() {
   const faltantes = useResource(useCallback(() => contribuicoesApi.faltantes(id), [id]));
   const metas = useResource(useCallback(() => metasApi.listar(id), [id]));
   const cobertura = useResource(useCallback(() => coberturaApi.calcular(id), [id]));
+  const alertas = useResource(useCallback(() => alertasApi.alergenos(id), [id]));
   const participantes = useResource(participantesApi.listar);
   const categorias = useResource(categoriasApi.listar);
 
@@ -57,6 +60,11 @@ export function EventoDetalhePage() {
     itens.reload();
     faltantes.reload();
     cobertura.reload();
+    alertas.reload();
+  };
+  const aoInscrever = () => {
+    participacoes.reload();
+    alertas.reload();
   };
   const aoContribuir = () => {
     contribuicoes.reload();
@@ -104,9 +112,10 @@ export function EventoDetalhePage() {
         </div>
         <div className="stack">
           <CoberturaPanel cobertura={cobertura} />
+          <AlertasAlergenoPanel alertas={alertas} />
           <FaltantesPanel evento={ev} faltantes={faltantes} />
           <MetasSection evento={ev} itens={itens} metas={metas} onAlterado={aoAlterarMeta} />
-          <ParticipacoesSection evento={ev} participacoes={participacoes} participantes={participantes} />
+          <ParticipacoesSection evento={ev} participacoes={participacoes} participantes={participantes} onInscrito={aoInscrever} />
         </div>
       </div>
     </div>

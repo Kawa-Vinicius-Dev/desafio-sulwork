@@ -121,6 +121,14 @@ export interface Cobertura {
   categorias: CoberturaCategoria[];
 }
 
+export interface AlertaAlergeno {
+  itemId: number;
+  itemNome: string;
+  participanteId: number;
+  participanteNome: string;
+  alergenos: string[];
+}
+
 /** Corpo padrão de erro do GlobalExceptionHandler. */
 export interface ErrorResponse {
   timestamp: string;
