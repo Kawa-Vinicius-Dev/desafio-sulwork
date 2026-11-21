@@ -1,6 +1,7 @@
 import { http } from './http';
 import type {
   Categoria,
+  Cobertura,
   Contribuicao,
   ContribuicaoRequest,
   Evento,
@@ -63,6 +64,10 @@ export const metasApi = {
   definir: (eventoId: number, categoriaId: number, percentual: number) =>
     http.put<MetaCategoria>(`/eventos/${eventoId}/metas/${categoriaId}`, { percentual }),
   remover: (eventoId: number, categoriaId: number) => http.delete(`/eventos/${eventoId}/metas/${categoriaId}`),
+};
+
+export const coberturaApi = {
+  calcular: (eventoId: number) => http.get<Cobertura>(`/eventos/${eventoId}/cobertura`),
 };
 
 export { ApiError } from './http';

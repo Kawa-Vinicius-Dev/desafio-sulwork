@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   categoriasApi,
+  coberturaApi,
   contribuicoesApi,
   eventosApi,
   itensApi,
@@ -15,6 +16,7 @@ import { StatusBadge } from '../components/StatusBadge';
 import { TIPO_LABEL } from '../domain/evento';
 import { formatarDataHora } from '../domain/formatadores';
 import { useResource } from '../hooks/useResource';
+import { CoberturaPanel } from './evento/CoberturaPanel';
 import { ContribuicoesSection } from './evento/ContribuicoesSection';
 import { FaltantesPanel } from './evento/FaltantesPanel';
 import { ItensSection } from './evento/ItensSection';
@@ -35,6 +37,7 @@ export function EventoDetalhePage() {
   const contribuicoes = useResource(useCallback(() => contribuicoesApi.listar(id), [id]));
   const faltantes = useResource(useCallback(() => contribuicoesApi.faltantes(id), [id]));
   const metas = useResource(useCallback(() => metasApi.listar(id), [id]));
+  const cobertura = useResource(useCallback(() => coberturaApi.calcular(id), [id]));
   const participantes = useResource(participantesApi.listar);
   const categorias = useResource(categoriasApi.listar);
 
@@ -53,10 +56,16 @@ export function EventoDetalhePage() {
   const aoAdicionarItem = () => {
     itens.reload();
     faltantes.reload();
+    cobertura.reload();
   };
   const aoContribuir = () => {
     contribuicoes.reload();
     faltantes.reload();
+    cobertura.reload();
+  };
+  const aoAlterarMeta = () => {
+    metas.reload();
+    cobertura.reload();
   };
 
   return (
@@ -94,8 +103,9 @@ export function EventoDetalhePage() {
           />
         </div>
         <div className="stack">
+          <CoberturaPanel cobertura={cobertura} />
           <FaltantesPanel evento={ev} faltantes={faltantes} />
-          <MetasSection evento={ev} itens={itens} metas={metas} onAlterado={metas.reload} />
+          <MetasSection evento={ev} itens={itens} metas={metas} onAlterado={aoAlterarMeta} />
           <ParticipacoesSection evento={ev} participacoes={participacoes} participantes={participantes} />
         </div>
       </div>

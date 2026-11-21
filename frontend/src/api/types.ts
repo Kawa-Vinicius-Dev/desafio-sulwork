@@ -106,6 +106,21 @@ export interface MetaCategoria {
   percentual: number;
 }
 
+export interface CoberturaCategoria {
+  categoriaId: number;
+  categoriaNome: string;
+  percentual: number;
+  meta: number | null;
+  metaAtingida: boolean;
+}
+
+export interface Cobertura {
+  percentualGeral: number;
+  obrigatoriosCompletos: boolean;
+  pronto: boolean;
+  categorias: CoberturaCategoria[];
+}
+
 /** Corpo padrão de erro do GlobalExceptionHandler. */
 export interface ErrorResponse {
   timestamp: string;

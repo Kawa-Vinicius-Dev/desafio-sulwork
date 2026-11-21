@@ -81,6 +81,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #c7d7fe; border-c
 /* ---------- Feedback ---------- */
 .alert { padding: 0.65rem 0.85rem; border-radius: 8px; margin-bottom: 0.85rem; font-size: 0.9rem; }
 .alert-error { background: var(--danger-bg); color: #b42318; border: 1px solid #fecdca; }
+.alert-ok { background: #ecfdf3; color: #067647; border: 1px solid #abefc6; }
+.alert-warn { background: #fffaeb; color: #b54708; border: 1px solid #fedf89; }
 
 .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
 .badge-rascunho { background: #f2f4f7; color: #475467; }
