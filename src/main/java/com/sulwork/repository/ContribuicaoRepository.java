@@ -50,4 +50,21 @@ public interface ContribuicaoRepository extends JpaRepository<Contribuicao, Long
              ORDER BY i.obrigatorio DESC, i.nome
             """, nativeQuery = true)
     List<ItemFaltanteView> buscarFaltantes(@Param("eventoId") Long eventoId);
+
+    /** Todos os itens do evento com o total confirmado: base do cálculo de cobertura. */
+    @Query(value = """
+            SELECT i.id                            AS "itemId",
+                   c.id                            AS "categoriaId",
+                   c.nome                          AS "categoriaNome",
+                   i.quantidade_necessaria         AS "quantidadeNecessaria",
+                   COALESCE(SUM(ct.quantidade), 0) AS "quantidadeConfirmada",
+                   i.obrigatorio                   AS "obrigatorio"
+              FROM item i
+              JOIN categoria c          ON c.id = i.categoria_id
+              LEFT JOIN contribuicao ct ON ct.item_id = i.id
+             WHERE i.evento_id = :eventoId
+             GROUP BY i.id, c.id, c.nome, i.quantidade_necessaria, i.obrigatorio
+             ORDER BY c.nome
+            """, nativeQuery = true)
+    List<ItemCoberturaView> buscarCobertura(@Param("eventoId") Long eventoId);
 }
