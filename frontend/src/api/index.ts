@@ -50,6 +50,10 @@ export const contribuicoesApi = {
   listar: (eventoId: number) => http.get<Contribuicao[]>(`/eventos/${eventoId}/contribuicoes`),
   contribuir: (eventoId: number, itemId: number, req: ContribuicaoRequest) =>
     http.post<Contribuicao>(`/eventos/${eventoId}/itens/${itemId}/contribuicoes`, req),
+  alterar: (eventoId: number, contribuicaoId: number, quantidade: number) =>
+    http.put<Contribuicao>(`/eventos/${eventoId}/contribuicoes/${contribuicaoId}`, { quantidade }),
+  remover: (eventoId: number, contribuicaoId: number) =>
+    http.delete(`/eventos/${eventoId}/contribuicoes/${contribuicaoId}`),
   faltantes: (eventoId: number) => http.get<Faltante[]>(`/eventos/${eventoId}/faltantes`),
 };
 

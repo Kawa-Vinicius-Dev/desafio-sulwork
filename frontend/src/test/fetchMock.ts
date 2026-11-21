@@ -9,7 +9,8 @@ export function mockFetch(rotas: Rota[]) {
     const rota = rotas.find((r) => (r.method ?? 'GET') === method && url === `/api${r.path}`);
     if (!rota) return new Response('', { status: 404 });
     const texto = rota.body === undefined ? '' : JSON.stringify(rota.body);
-    return new Response(texto, { status: rota.status ?? 200 });
+    // 204 No Content não pode ter corpo, nem string vazia
+    return new Response(texto === '' ? null : texto, { status: rota.status ?? 200 });
   });
   vi.stubGlobal('fetch', fn);
   return fn;

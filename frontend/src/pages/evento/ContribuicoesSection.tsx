@@ -19,10 +19,35 @@ interface Props {
 
 const FORM_VAZIO = { participanteId: '', itemId: '', quantidade: '1' };
 
+/** O DELETE devolve 204 sem corpo; devolver true deixa claro para a tela que deu certo. */
+async function removerContribuicao(eventoId: number, contribuicaoId: number) {
+  await contribuicoesApi.remover(eventoId, contribuicaoId);
+  return true;
+}
+
 export function ContribuicoesSection({ evento, itens, participacoes, contribuicoes, onContribuido }: Props) {
   const [form, setForm] = useState(FORM_VAZIO);
   const contribuir = useSubmit(contribuicoesApi.contribuir);
+  const alterar = useSubmit(contribuicoesApi.alterar);
+  const remover = useSubmit(removerContribuicao);
+  const [editando, setEditando] = useState<{ id: number; quantidade: string } | null>(null);
   const erro = contribuir.error?.fields ?? {};
+  const podeAlterar = aceitaContribuicoes(evento);
+
+  async function salvarEdicao(c: Contribuicao) {
+    if (!editando) return;
+    const alterada = await alterar.run(evento.id, c.id, Number(editando.quantidade));
+    if (alterada) {
+      setEditando(null);
+      onContribuido();
+    }
+  }
+
+  async function onRemover(c: Contribuicao) {
+    if (!window.confirm(`Remover a contribuição de ${c.participanteNome} (${c.quantidade}x ${c.itemNome})?`)) return;
+    const removida = await remover.run(evento.id, c.id);
+    if (removida) onContribuido();
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -47,6 +72,7 @@ export function ContribuicoesSection({ evento, itens, participacoes, contribuico
       <h3>Contribuições</h3>
       {contribuicoes.loading && !contribuicoes.data && <Loading />}
       <ErrorAlert error={contribuicoes.error} />
+      <ErrorAlert error={alterar.error ?? remover.error} />
       {contribuicoes.data?.length === 0 && <p className="muted">Nenhuma contribuição ainda.</p>}
       {contribuicoes.data && contribuicoes.data.length > 0 && (
         <table className="table">
@@ -55,6 +81,7 @@ export function ContribuicoesSection({ evento, itens, participacoes, contribuico
               <th>Quem</th>
               <th>Item</th>
               <th className="num">Qtd.</th>
+              {podeAlterar && <th>Ações</th>}
             </tr>
           </thead>
           <tbody>
@@ -62,14 +89,51 @@ export function ContribuicoesSection({ evento, itens, participacoes, contribuico
               <tr key={c.id}>
                 <td>{c.participanteNome}</td>
                 <td>{c.itemNome}</td>
-                <td className="num">{c.quantidade}</td>
+                <td className="num">
+                  {editando?.id === c.id ? (
+                    <input
+                      aria-label={`Nova quantidade de ${c.itemNome}`}
+                      type="number"
+                      min={1}
+                      value={editando.quantidade}
+                      onChange={(e) => setEditando({ id: c.id, quantidade: e.target.value })}
+                    />
+                  ) : (
+                    c.quantidade
+                  )}
+                </td>
+                {podeAlterar && (
+                  <td>
+                    <div className="btn-group">
+                      {editando?.id === c.id ? (
+                        <>
+                          <button type="button" className="btn btn-primary" onClick={() => salvarEdicao(c)} disabled={alterar.submitting}>
+                            Salvar
+                          </button>
+                          <button type="button" className="btn" onClick={() => setEditando(null)}>
+                            Cancelar
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button type="button" className="btn" onClick={() => setEditando({ id: c.id, quantidade: String(c.quantidade) })}>
+                            Alterar
+                          </button>
+                          <button type="button" className="btn btn-danger" onClick={() => onRemover(c)} disabled={remover.submitting}>
+                            Remover
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
         </table>
       )}
 
-      {aceitaContribuicoes(evento) ? (
+      {podeAlterar ? (
         <form onSubmit={onSubmit}>
           <h4>Registrar contribuição</h4>
           <ErrorAlert error={contribuir.error} />
