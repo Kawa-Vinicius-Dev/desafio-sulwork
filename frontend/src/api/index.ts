@@ -8,6 +8,7 @@ import type {
   Faltante,
   Item,
   ItemRequest,
+  MetaCategoria,
   Participacao,
   Participante,
   ParticipanteRequest,
@@ -55,6 +56,13 @@ export const contribuicoesApi = {
   remover: (eventoId: number, contribuicaoId: number) =>
     http.delete(`/eventos/${eventoId}/contribuicoes/${contribuicaoId}`),
   faltantes: (eventoId: number) => http.get<Faltante[]>(`/eventos/${eventoId}/faltantes`),
+};
+
+export const metasApi = {
+  listar: (eventoId: number) => http.get<MetaCategoria[]>(`/eventos/${eventoId}/metas`),
+  definir: (eventoId: number, categoriaId: number, percentual: number) =>
+    http.put<MetaCategoria>(`/eventos/${eventoId}/metas/${categoriaId}`, { percentual }),
+  remover: (eventoId: number, categoriaId: number) => http.delete(`/eventos/${eventoId}/metas/${categoriaId}`),
 };
 
 export { ApiError } from './http';

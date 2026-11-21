@@ -6,7 +6,7 @@ export type TipoEvento = 'CAFE_DA_MANHA' | 'ALMOCO' | 'LANCHE' | 'CONFRATERNIZAC
 export type StatusEvento =
   | 'RASCUNHO'
   | 'ABERTO'
-  | 'INSCRICOES_ENCERRADAS'
+  | 'ENCERRADO'
   | 'REALIZADO'
   | 'CANCELADO';
 
@@ -96,6 +96,14 @@ export interface Faltante {
   quantidadeConfirmada: number;
   faltam: number;
   obrigatorio: boolean;
+}
+
+export interface MetaCategoria {
+  id: number;
+  eventoId: number;
+  categoriaId: number;
+  categoriaNome: string;
+  percentual: number;
 }
 
 /** Corpo padrão de erro do GlobalExceptionHandler. */
