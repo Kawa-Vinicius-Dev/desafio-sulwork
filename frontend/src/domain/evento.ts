@@ -11,7 +11,7 @@ export const TIPO_LABEL: Record<TipoEvento, string> = {
 export const STATUS_LABEL: Record<StatusEvento, string> = {
   RASCUNHO: 'Rascunho',
   ABERTO: 'Aberto',
-  INSCRICOES_ENCERRADAS: 'Inscrições encerradas',
+  ENCERRADO: 'Inscrições encerradas',
   REALIZADO: 'Realizado',
   CANCELADO: 'Cancelado',
 };
@@ -22,8 +22,8 @@ export const STATUS_LABEL: Record<StatusEvento, string> = {
  */
 export const PROXIMOS_STATUS: Record<StatusEvento, StatusEvento[]> = {
   RASCUNHO: ['ABERTO', 'CANCELADO'],
-  ABERTO: ['INSCRICOES_ENCERRADAS', 'CANCELADO'],
-  INSCRICOES_ENCERRADAS: ['REALIZADO', 'CANCELADO'],
+  ABERTO: ['ENCERRADO', 'CANCELADO'],
+  ENCERRADO: ['REALIZADO', 'CANCELADO'],
   REALIZADO: [],
   CANCELADO: [],
 };
@@ -32,7 +32,7 @@ export const PROXIMOS_STATUS: Record<StatusEvento, StatusEvento[]> = {
 export const ACAO_STATUS: Record<StatusEvento, string> = {
   RASCUNHO: 'Voltar para rascunho',
   ABERTO: 'Abrir inscrições',
-  INSCRICOES_ENCERRADAS: 'Encerrar inscrições',
+  ENCERRADO: 'Encerrar inscrições',
   REALIZADO: 'Marcar como realizado',
   CANCELADO: 'Cancelar evento',
 };

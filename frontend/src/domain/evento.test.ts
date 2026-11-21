@@ -16,8 +16,8 @@ const evento = (parcial: Partial<Evento>): Evento => ({
 describe('regras de evento no front', () => {
   it('segue as mesmas transições do backend e não volta status', () => {
     expect(PROXIMOS_STATUS.RASCUNHO).toEqual(['ABERTO', 'CANCELADO']);
-    expect(PROXIMOS_STATUS.ABERTO).toEqual(['INSCRICOES_ENCERRADAS', 'CANCELADO']);
-    expect(PROXIMOS_STATUS.INSCRICOES_ENCERRADAS).toEqual(['REALIZADO', 'CANCELADO']);
+    expect(PROXIMOS_STATUS.ABERTO).toEqual(['ENCERRADO', 'CANCELADO']);
+    expect(PROXIMOS_STATUS.ENCERRADO).toEqual(['REALIZADO', 'CANCELADO']);
     expect(PROXIMOS_STATUS.REALIZADO).toEqual([]);
     expect(PROXIMOS_STATUS.CANCELADO).toEqual([]);
   });
@@ -34,6 +34,6 @@ describe('regras de evento no front', () => {
   it('aceita itens em rascunho e aberto', () => {
     expect(aceitaItens(evento({ status: 'RASCUNHO' }))).toBe(true);
     expect(aceitaItens(evento({ status: 'ABERTO' }))).toBe(true);
-    expect(aceitaItens(evento({ status: 'INSCRICOES_ENCERRADAS' }))).toBe(false);
+    expect(aceitaItens(evento({ status: 'ENCERRADO' }))).toBe(false);
   });
 });

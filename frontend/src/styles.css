@@ -85,7 +85,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #c7d7fe; border-c
 .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
 .badge-rascunho { background: #f2f4f7; color: #475467; }
 .badge-aberto { background: #ecfdf3; color: #067647; }
-.badge-inscricoes_encerradas { background: #fffaeb; color: #b54708; }
+.badge-encerrado { background: #fffaeb; color: #b54708; }
 .badge-realizado { background: #eef3ff; color: #1f5eff; }
 .badge-cancelado { background: #fef3f2; color: #b42318; }
 
