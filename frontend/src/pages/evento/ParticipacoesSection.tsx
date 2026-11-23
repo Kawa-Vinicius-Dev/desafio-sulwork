@@ -23,6 +23,8 @@ export function ParticipacoesSection({ evento, participacoes, participantes, onI
 
   const inscritos = new Set(participacoes.data?.map((p) => p.participanteId));
   const disponiveis = (participantes.data ?? []).filter((p) => !inscritos.has(p.id));
+  // A inscrição só traz o nome; as restrições vêm do cadastro do participante.
+  const restricoes = new Map(participantes.data?.map((p) => [p.id, p.restricoesAlimentares]));
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -42,7 +44,12 @@ export function ParticipacoesSection({ evento, participacoes, participantes, onI
         <ul className="list compact">
           {participacoes.data.map((p) => (
             <li key={p.id} className="list-item">
-              <span>{p.participanteNome}</span>
+              <div>
+                <span>{p.participanteNome}</span>
+                {restricoes.get(p.participanteId) && (
+                  <p className="small restricao">Restrição: {restricoes.get(p.participanteId)}</p>
+                )}
+              </div>
               <span className="muted small">inscrito em {formatarDataHora(p.inscritoEm)}</span>
             </li>
           ))}

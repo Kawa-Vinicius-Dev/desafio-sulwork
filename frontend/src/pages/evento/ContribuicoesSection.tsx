@@ -163,7 +163,7 @@ export function ContribuicoesSection({ evento, itens, participacoes, contribuico
                 <option value="">Selecione...</option>
                 {itens.data?.map((i) => (
                   <option key={i.id} value={i.id}>
-                    {i.nome}
+                    {i.alergenos ? `${i.nome} (contém ${i.alergenos})` : i.nome}
                   </option>
                 ))}
               </select>
