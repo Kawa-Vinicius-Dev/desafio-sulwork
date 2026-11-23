@@ -31,9 +31,14 @@ npm test
 
 Os testes de integração rodam no Postgres, não no H2, porque o projeto usa SQL nativo.
 
+O que os testes cobrem:
+- Unitários: transições de status, regras de evento, item, inscrição, CPF, contribuição (status, prazo, soma, inscrito), metas, cobertura e alérgenos.
+- Integração: fluxo de contribuição pela API, formato dos erros (400, 404, 422) e duas contribuições ao mesmo tempo no mesmo item.
+- Frontend: regras de status, resumo do WhatsApp, filtros da lista de eventos e as telas de contribuição, metas, cobertura, inscritos e alérgenos.
+
 ## Arquitetura
 
-Backend em camadas: `controller` (HTTP), `service` (regras), `repository` (banco), `domain` (entidades), `dto` (entrada e saída) e `exception` (erros num formato só: 400 validação, 404 não encontrado, 422 regra de negócio). O frontend fica em `frontend/`.
+Backend em camadas: `controller` (HTTP), `service` (regras), `repository` (banco), `domain` (entidades), `dto` (entrada e saída) e `exception` (erros num formato só: 400 validação, 404 não encontrado, 409 conflito no banco, 422 regra de negócio). O frontend fica em `frontend/`.
 
 ## Decisões
 
@@ -47,9 +52,9 @@ Backend em camadas: `controller` (HTTP), `service` (regras), `repository` (banco
 
 **Prazo x status:** contribuição só com o evento ABERTO e antes do prazo. Passar do prazo não muda o status sozinho, só bloqueia as contribuições.
 
-**Contribuições:** só quem está inscrito contribui. A soma de um item não passa da quantidade necessária.
+**Contribuições:** só quem está inscrito contribui. A soma de um item não passa da quantidade necessária. Se duas pessoas contribuem no mesmo item ao mesmo tempo, o item fica travado no banco (`SELECT ... FOR UPDATE`) até a primeira terminar, então a segunda já soma a quantidade dela.
 
-**Participantes:** CPF validado e sem repetir. Ninguém se inscreve duas vezes no mesmo evento.
+**Participantes:** CPF validado e sem repetir. Ninguém se inscreve duas vezes no mesmo evento. Se dois cadastros iguais chegarem juntos, o banco barra o segundo e a API devolve 409.
 
 **Categorias e metas:** a categoria é a mesma para todos os eventos. A meta é por evento (ex.: Bebidas 100%).
 
@@ -57,6 +62,13 @@ Backend em camadas: `controller` (HTTP), `service` (regras), `repository` (banco
 
 - Tipo do evento virou uma lista fixa: café da manhã, almoço, lanche, confraternização e outro.
 - Restrições e alérgenos são texto livre separado por vírgula, para não complicar o cadastro.
+
+## Limitações
+
+- Não tem login. Qualquer pessoa que abre o sistema pode criar e alterar.
+- Ainda não dá para editar ou excluir evento, participante, categoria e item, só criar. Contribuição e meta já dá para alterar e remover.
+- As tabelas são criadas pelo Hibernate (`ddl-auto=update`). Para produção eu usaria migrações com Flyway.
+- O horário segue o fuso America/Recife, definido no Dockerfile.
 
 ## Cobertura
 
@@ -68,6 +80,8 @@ Backend em camadas: `controller` (HTTP), `service` (regras), `repository` (banco
 ## Restrições e alérgenos
 
 O sistema compara os alérgenos dos itens com as restrições dos inscritos, sem ligar para acento ou maiúscula. Se bater, aparece um aviso na tela do evento. É só aviso, não bloqueia nada.
+
+Na tela do evento, a restrição de cada inscrito aparece embaixo do nome, e na hora de contribuir o item já mostra o que ele contém (ex.: "Bolo (contém glúten, ovo)").
 
 ## Feature livre: resumo para o WhatsApp
 
