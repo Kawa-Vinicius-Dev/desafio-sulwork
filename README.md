@@ -1,4 +1,3 @@
-cat > README.md <<'EOF'
 # Desafio Sulwork
 
 Sistema para organizar os eventos de alimentação da Sulwork. O organizador cria o evento e o que precisa, os participantes se inscrevem e dizem o que vão levar, e todo mundo vê o que ainda falta.
@@ -103,5 +102,3 @@ Usei o Claude como apoio para propor a estrutura, escrever boa parte do código 
 - Sugestão aceita: usar SQL nativo para os itens que faltam e para a cobertura, e deixar a regra do cálculo em Java para dar para testar.
 - Mudei de ideia: eu queria usar H2 nos testes, mas com SQL nativo o H2 podia esconder erro. Fiquei no Postgres, o mesmo banco da aplicação.
 - Decidi eu: os status do evento, os tipos de evento, categoria como tabela, o uso de Lombok e o que entrava no escopo.
-  EOF
-  head -3 README.md
