@@ -56,6 +56,7 @@ public class ContribuicaoService {
             throw new BusinessRuleException("Participante não está inscrito neste evento");
         }
 
+        itemService.travar(itemId);
         long jaConfirmado = repository.somarQuantidadePorItem(itemId);
         validarQuantidade(item, jaConfirmado, request.quantidade());
 
@@ -71,6 +72,7 @@ public class ContribuicaoService {
         Contribuicao c = buscarDoEvento(eventoId, contribuicaoId);
         validarAlteracaoPermitida(c.getItem().getEvento());
 
+        itemService.travar(c.getItem().getId());
         long dosOutros = repository.somarQuantidadePorItemExceto(c.getItem().getId(), contribuicaoId);
         validarQuantidade(c.getItem(), dosOutros, request.quantidade());
 

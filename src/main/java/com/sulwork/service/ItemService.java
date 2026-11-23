@@ -60,6 +60,12 @@ public class ItemService {
         return repository.findByEventoId(eventoId).stream().map(ItemResponse::from).toList();
     }
 
+    /** Trava o item até o fim da transação. Usado antes de somar as contribuições. */
+    void travar(Long id) {
+        repository.buscarComLock(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item", id));
+    }
+
     Item buscarEntidade(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item", id));
