@@ -27,7 +27,7 @@ describe('EventosPage', () => {
 
     const link = await screen.findByRole('link', { name: 'Almoço de fim de ano' });
     expect(link).toHaveAttribute('href', '/eventos/7');
-    expect(screen.getByText('Aberto')).toBeInTheDocument();
+    expect(screen.getByText('Aberto', { selector: '.badge' })).toBeInTheDocument();
   });
 
   it('mostra a mensagem do backend e o erro de cada campo quando a criação falha', async () => {
@@ -50,5 +50,27 @@ describe('EventosPage', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Dados inválidos');
     expect(screen.getByText('deve ser uma data futura')).toBeInTheDocument();
+  });
+
+  it('filtra a lista por status e pelo nome', async () => {
+    mockFetch([
+      {
+        path: '/eventos',
+        body: [
+          { id: 1, nome: 'Café de sexta', descricao: null, tipo: 'CAFE_DA_MANHA', dataHora: '2026-12-04T08:00:00', prazoAlteracoes: '2026-12-03T18:00:00', status: 'ABERTO' },
+          { id: 2, nome: 'Almoço de fim de ano', descricao: null, tipo: 'ALMOCO', dataHora: '2026-12-20T12:00:00', prazoAlteracoes: '2026-12-18T12:00:00', status: 'RASCUNHO' },
+        ],
+      },
+    ]);
+    const user = userEvent.setup();
+    renderPage();
+    await screen.findByRole('link', { name: 'Café de sexta' });
+
+    await user.selectOptions(screen.getByLabelText('Filtrar por status'), 'RASCUNHO');
+    expect(screen.queryByRole('link', { name: 'Café de sexta' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Almoço de fim de ano' })).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText('Buscar evento pelo nome'), 'café');
+    expect(screen.getByText('Nenhum evento com esse filtro.')).toBeInTheDocument();
   });
 });

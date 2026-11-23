@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { eventosApi } from '../api';
-import type { EventoRequest, TipoEvento } from '../api/types';
+import type { EventoRequest, StatusEvento, TipoEvento } from '../api/types';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { Field } from '../components/Field';
 import { Loading } from '../components/Loading';
 import { StatusBadge } from '../components/StatusBadge';
-import { TIPO_LABEL } from '../domain/evento';
+import { STATUS_LABEL, TIPO_LABEL } from '../domain/evento';
 import { formatarDataHora } from '../domain/formatadores';
 import { useResource } from '../hooks/useResource';
 import { useSubmit } from '../hooks/useSubmit';
@@ -23,6 +23,14 @@ export function EventosPage() {
   const eventos = useResource(eventosApi.listar);
   const [form, setForm] = useState<EventoRequest>(FORM_VAZIO);
   const criar = useSubmit(eventosApi.criar);
+  const [filtroStatus, setFiltroStatus] = useState<StatusEvento | ''>('');
+  const [busca, setBusca] = useState('');
+
+  const visiveis = (eventos.data ?? []).filter(
+    (ev) =>
+      (filtroStatus === '' || ev.status === filtroStatus) &&
+      ev.nome.toLowerCase().includes(busca.trim().toLowerCase()),
+  );
 
   const set = <K extends keyof EventoRequest>(campo: K, valor: EventoRequest[K]) =>
     setForm((f) => ({ ...f, [campo]: valor }));
@@ -48,8 +56,33 @@ export function EventosPage() {
           <p className="muted">Nenhum evento ainda. Crie o primeiro ao lado.</p>
         )}
         {eventos.data && eventos.data.length > 0 && (
+          <div className="filtros">
+            <input
+              aria-label="Buscar evento pelo nome"
+              placeholder="Buscar pelo nome..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
+            <select
+              aria-label="Filtrar por status"
+              value={filtroStatus}
+              onChange={(e) => setFiltroStatus(e.target.value as StatusEvento | '')}
+            >
+              <option value="">Todos os status</option>
+              {Object.entries(STATUS_LABEL).map(([valor, label]) => (
+                <option key={valor} value={valor}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        {eventos.data && eventos.data.length > 0 && visiveis.length === 0 && (
+          <p className="muted">Nenhum evento com esse filtro.</p>
+        )}
+        {visiveis.length > 0 && (
           <ul className="list">
-            {eventos.data.map((ev) => (
+            {visiveis.map((ev) => (
               <li key={ev.id} className="list-item">
                 <div>
                   <Link to={`/eventos/${ev.id}`} className="list-title">

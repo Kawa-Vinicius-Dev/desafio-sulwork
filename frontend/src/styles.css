@@ -116,3 +116,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid #c7d7fe; border-c
 .progress-bar { height: 100%; background: var(--whatsapp); }
 .copy-fallback { margin-top: 1rem; }
 .copy-fallback textarea { font-family: ui-monospace, monospace; font-size: 0.85rem; }
+
+/* Filtros da lista de eventos */
+.filtros { display: flex; gap: 0.5rem; margin-bottom: 0.85rem; flex-wrap: wrap; }
+.filtros input { flex: 1 1 12rem; }
+.filtros select { flex: 0 1 11rem; }
