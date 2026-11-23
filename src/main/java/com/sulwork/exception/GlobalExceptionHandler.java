@@ -1,6 +1,7 @@
 package com.sulwork.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -40,5 +41,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> jsonInvalido(HttpMessageNotReadableException ex, HttpServletRequest req) {
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(400, "Corpo da requisição inválido", req.getRequestURI()));
+    }
+
+    /** Duas requisições iguais ao mesmo tempo (ex.: mesmo CPF) passam pela checagem e o banco barra a segunda. */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> conflito(DataIntegrityViolationException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.of(409, "Registro já existe ou conflita com outro dado", req.getRequestURI()));
     }
 }
